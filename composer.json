@@ -1,0 +1,30 @@
+{
+    "name" : "soothsilver/dtd-parser",
+    "description" : "Simple fully compliant DTD parser that allows you to extract information from Document Type Definition files.",
+    "version" : "0.1.0",
+    "license" : "MIT",
+    "type" : "library",
+    "keywords" : [ "DTD", "XML", "parser", "parsing", "document", "type", "definition" ],
+    "homepage" : "https://github.com/Soothsilver/dtd-parser",
+    "time" : "2014-10-23",
+    "authors": [
+        {
+            "name" : "Petr Hudeček",
+            "email" : "petrhudecek2010@gmail.com",
+            "homepage" : "http://petrhudecek.ic.cz/",
+            "role" : "Developer"
+        }
+    ],
+    "support": {
+        "email" : "petrhudecek2010@gmail.com",
+        "source" : "https://github.com/Soothsilver/dtd-parser"
+    },
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-0" : {
+            "Soothsilver\\DtdParser": ""
+        }
+    }
+}

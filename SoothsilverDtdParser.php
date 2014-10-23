@@ -1,7 +1,11 @@
 <?php
-// TODO prevent XML explosion
-namespace Aurora {
-    use Aurora\Internal\AttlistMode;
+/*
+ * To-do list for this library:
+ * - Add a feature to prevent XML explosion
+ * - Remember comments and line feeds inside comments count
+ */
+namespace Soothsilver\DtdParser {
+
 
     /**
      * Represents all information extracted from a Document Type Declaration file, possibly combined with an internal subset.
@@ -11,31 +15,31 @@ namespace Aurora {
         /**
          * @var Element[]
          */
-        public $elements = array();
+        public $elements = [];
         /**
          * @var ParameterEntity[]
          */
-        public $parameterEntities = array();
+        public $parameterEntities = [];
         /**
          * @var GeneralEntity[]
          */
-        public $generalEntities = array();
+        public $generalEntities = [];
         /**
          * @var Notation[]
          */
-        public $notations = array();
+        public $notations = [];
         /**
          * @var Error[]
          */
-        public $errors = array();
+        public $errors = [];
         /**
          * @var Error[]
          */
-        public $warnings = array();
+        public $warnings = [];
         /**
          * @var ProcessingInstruction[]
          */
-        public $processingInstructions = array();
+        public $processingInstructions = [];
 
         /**
          * Returns a boolean representing the well-formedness and validity of the DTD.
@@ -95,7 +99,7 @@ namespace Aurora {
          * 1. A quote (") open a quoted string which is put into a single token even if it includes whitespaces or apostrophes. This token is ended by the next quote (").
          * 2. The same goes for apostrophe (') except that apostrophe ends the token and quotes inside are not recognized.
          * In both of the cases above, the quotes or apostrophes are put into a single, separate tokens.
-         * 3. An opening paranthesis ('(') forces a different mode where tokens are separated by whitespace and the '|' character as in the enumeration or notation attribute type definition in DTD. If two words inside are separated only by whitespace but not by '|', the tokenization fails.
+         * 3. An opening parenthesis ('(') forces a different mode where tokens are separated by whitespace and the '|' character as in the enumeration or notation attribute type definition in DTD. If two words inside are separated only by whitespace but not by '|', the tokenization fails.
          * Some other caveats apply. Sorry for not detailing them here.
          * @param string $string The string to split into tokens.
          * @param string $tokenizationErrorMessage Out-parameter. If tokenization fails, this is filled with the reason.
@@ -104,11 +108,11 @@ namespace Aurora {
         private function tokenize($string, &$tokenizationErrorMessage)
         {
             $length = strlen($string);
-            $tokens = array();
+            $tokens = [];
             $outerQuote = false;
             $constructingWord = "";
             $afterWhitespace = false;
-            $prohibitNonTerminalInsideParantheses = false;
+            $prohibitNonTerminalInsideParentheses = false;
             for ($i = 0; $i < $length; $i++)
             {
                 $char = $string[$i];
@@ -128,7 +132,7 @@ namespace Aurora {
                             {
                                 if ($constructingWord !== "")
                                 {
-                                    if ($prohibitNonTerminalInsideParantheses)
+                                    if ($prohibitNonTerminalInsideParentheses)
                                     {
                                         // Inside an enum, this was done: "( A B | C)" which is prohibited
                                         $tokenizationErrorMessage = "Inside an enumeration, values must be separated by the '|' character, not by whitespace.";
@@ -136,7 +140,7 @@ namespace Aurora {
                                     }
                                     $tokens[] = $constructingWord;
                                     $constructingWord = "";
-                                    $prohibitNonTerminalInsideParantheses = true;
+                                    $prohibitNonTerminalInsideParentheses = true;
                                 }
                             }
                             else
@@ -152,7 +156,7 @@ namespace Aurora {
                         {
                             if ($constructingWord !== "")
                             {
-                                if ($prohibitNonTerminalInsideParantheses)
+                                if ($prohibitNonTerminalInsideParentheses)
                                 {
                                     // Inside an enum, this was done: "( A B | C)" which is prohibited
                                     $tokenizationErrorMessage = "Inside an enumeration, values must be separated by the '|' character, not by whitespace.";
@@ -162,7 +166,7 @@ namespace Aurora {
                                 $constructingWord = "";
                             }
                             $tokens[] = "|";
-                            $prohibitNonTerminalInsideParantheses = false;
+                            $prohibitNonTerminalInsideParentheses = false;
                         }
                         else
                         {
@@ -175,7 +179,7 @@ namespace Aurora {
                         {
                             $tokens[] = "(";
                             $outerQuote = "(";
-                            $prohibitNonTerminalInsideParantheses = false;
+                            $prohibitNonTerminalInsideParentheses = false;
                         }
                         else
                         {
@@ -252,7 +256,7 @@ namespace Aurora {
         }
         private function evaluatePEReferencesIn($text, $peStyle)
         {
-            $matches = array();
+            $matches = [];
             while (preg_match('#(("[^"]*")|(\'[^\']*\')|[^\'"])*%([^;]*);#', $text, $matches, PREG_OFFSET_CAPTURE) === 1)
             {
                 $entityBeginsAt = $matches[4][1] - 1;
@@ -264,7 +268,7 @@ namespace Aurora {
                     switch($peStyle)
                     {
                         case Internal\PEStyle::IgnoreQuotedText:
-                        case Internal\PEStyle::MatchingParantheses: // TODO matching parantheses do not work
+                        case Internal\PEStyle::MatchingParentheses: // TODO matching parentheses do not work
                              // The two spaces are mandated by specification to disallow funny stuff
                              $text = substr($text, 0, $entityBeginsAt) . " " . $replacementText . " " . substr($text, $entityEndsBefore);
                             break;
@@ -318,7 +322,7 @@ namespace Aurora {
         }
         private function parseElement($declaration)
         {
-            $declaration = $this->evaluatePEReferencesIn($declaration, Internal\PEStyle::MatchingParantheses);
+            $declaration = $this->evaluatePEReferencesIn($declaration, Internal\PEStyle::MatchingParentheses);
             $tokens = array_values(array_filter(preg_split("/\s+/", $declaration)));
             if (count($tokens) === 0)
             {
@@ -391,7 +395,7 @@ namespace Aurora {
             $tokenId = 1;
             $attributeName = false;
             $attributeType = false;
-            $attributeEnumeration = array();
+            $attributeEnumeration = [];
             $attributeDefaultValue = false;
             $attributeDefaultType = false;
             $state = Internal\AttlistMode::NeedName;
@@ -1090,6 +1094,14 @@ namespace Aurora {
         public $enumeration = array();
         public $defaultType;
         public $defaultValue;
+
+        /**
+         * @param      $name
+         * @param      $type
+         * @param      $defaultType
+         * @param      $defaultValue
+         * @param array $enumeration
+         */
         public function __construct($name, $type, $defaultType, $defaultValue, $enumeration = false)
         {
             $this->name = $name;
@@ -1236,8 +1248,12 @@ namespace Aurora {
         }
     }
 }
-namespace Aurora\Internal
+namespace Soothsilver\DtdParser\Internal
 {
+    /**
+     * Contains regular expressions for various productions in the XML specification
+     * @package Soothsilver\DtdParser\Internal
+     */
     class XmlRegexes {
         public $NameChar;
         public $NameStartChar;
@@ -1251,6 +1267,11 @@ namespace Aurora\Internal
             $this->NmToken = "{$this->NameChar}+";
         }
     }
+
+    /**
+     * Represents the parser state during the parsing of an ATTLIST declaration
+     * @package Soothsilver\DtdParser\Internal
+     */
     abstract class AttlistMode {
         const NeedName = 0;
         const NeedAttType = 1;
@@ -1259,11 +1280,21 @@ namespace Aurora\Internal
         const NeedDefaultDecl = 4;
         const InsideEnumeration_NeedSeparator = 5;
     }
+
+    /**
+     * Represents the state of the parser that determines what should be done about parameter entities found.
+     * @package Soothsilver\DtdParser\Internal
+     */
     abstract class PEStyle {
         const IgnoreQuotedText = 0;
-        const MatchingParantheses = 1;
+        const MatchingParentheses = 1;
         const InEntityDeclaration = 2;
     }
+
+    /**
+     * Represents the parser state.
+     * @package Soothsilver\DtdParser\Internal
+     */
     abstract class TokenizeMode {
         const Attlist = 0;
         const EntityDeclaration = 1;
