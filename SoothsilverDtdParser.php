@@ -1249,7 +1249,6 @@ class Error
 
 namespace Soothsilver\DtdParser\Internal;
 
-
 /**
  * Contains regular expressions for various productions in the XML specification
  * @package Soothsilver\DtdParser\Internal
