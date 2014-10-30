@@ -23,7 +23,7 @@ You can either install this parser via Composer. The package name is `soothsilve
 ```
 {
  "require" : {
-  "soothsilver/dtd-parser" : "*"
+  "soothsilver/dtd-parser" : "dev-master" 
  }
 }
 ```

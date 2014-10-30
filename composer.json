@@ -4,7 +4,7 @@
     "version" : "0.1.0",
     "license" : "MIT",
     "type" : "library",
-    "keywords" : [ "DTD", "XML", "parser", "parsing", "document", "type", "definition" ],
+    "keywords" : [ "DTD", "XML", "parser" ],
     "homepage" : "https://github.com/Soothsilver/dtd-parser",
     "time" : "2014-10-23",
     "authors": [
