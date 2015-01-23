@@ -1,5 +1,4 @@
 <?php
-// TODO prague-modified.
 /**
  * @defgroup SoothsilverDtdParser Soothsilver DTD Parser
  * A standalone DTD parser for PHP.
